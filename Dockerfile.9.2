@@ -1,0 +1,21 @@
+ARG DOCKER_REGISTRY=docker.io
+ARG FROM_IMG_REPO=qnib
+ARG FROM_IMG_NAME="uplain-cudnn-dev"
+ARG FROM_IMG_TAG="9.2"
+ARG FROM_IMG_HASH=""
+
+
+### Create nccl deb
+FROM ${DOCKER_REGISTRY}/${FROM_IMG_REPO}/${FROM_IMG_NAME}:${FROM_IMG_TAG}${DOCKER_IMG_HASH} AS nccl
+RUN apt update \
+ && apt install -y build-essential devscripts debhelper git
+WORKDIR /usr/local/src
+RUN git clone https://github.com/nvidia/nccl
+WORKDIR /usr/local/src/nccl
+RUN make pkg.debian.build NVCC_GENCODE="-gencode=arch=compute_70,code=sm_70"
+
+FROM ${DOCKER_REGISTRY}/${FROM_IMG_REPO}/${FROM_IMG_NAME}:${FROM_IMG_TAG}${DOCKER_IMG_HASH}
+
+COPY --from=nccl /usr/local/src/nccl/build/pkg/deb/ /usr/local/deb/
+RUN dpkg -i /usr/local/deb/* \
+ && rm -rf /usr/local/deb/
