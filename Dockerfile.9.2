@@ -17,11 +17,5 @@ RUN make pkg.debian.build NVCC_GENCODE="-gencode=arch=compute_70,code=sm_70"
 FROM ${DOCKER_REGISTRY}/${FROM_IMG_REPO}/${FROM_IMG_NAME}:${FROM_IMG_TAG}${DOCKER_IMG_HASH}
 
 COPY --from=nccl /usr/local/src/nccl/build/pkg/deb/ /usr/local/deb/
-RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 10 \
- && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 10 \
- && update-alternatives --install /usr/bin/cc cc /usr/bin/gcc 30 \
- && update-alternatives --set cc /usr/bin/gcc \
- && update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++ 30 \
- && update-alternatives --set c++ /usr/bin/g++ \
- && dpkg -i /usr/local/deb/* \
+RUN dpkg -i /usr/local/deb/* \
  && rm -rf /usr/local/deb/
