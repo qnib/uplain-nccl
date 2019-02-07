@@ -3,10 +3,13 @@ ARG FROM_IMG_REPO=qnib
 ARG FROM_IMG_NAME="uplain-cudnn-dev"
 ARG FROM_IMG_TAG="9.0"
 ARG FROM_IMG_HASH=""
+ARG CUDA_COMPUTE_CAPABILITIES=""
 
 
 ### Create nccl deb
 FROM ${DOCKER_REGISTRY}/${FROM_IMG_REPO}/${FROM_IMG_NAME}:${FROM_IMG_TAG}${DOCKER_IMG_HASH} AS nccl
+ARG CUDA_COMPUTE_CAPABILITIES
+
 RUN apt update \
  && apt install -y devscripts debhelper cmake g++-6 gcc-6 cpp-6
 WORKDIR /usr/local/src
@@ -18,7 +21,8 @@ RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-6 10 \
  && update-alternatives --set cc /usr/bin/gcc \
  && update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++ 30 \
  && update-alternatives --set c++ /usr/bin/g++
-RUN make pkg.debian.build
+COPY build_nccl.sh /usr/local/bin/
+RUN build_nccl.sh
 
 FROM ${DOCKER_REGISTRY}/${FROM_IMG_REPO}/${FROM_IMG_NAME}:${FROM_IMG_TAG}${DOCKER_IMG_HASH}
 
