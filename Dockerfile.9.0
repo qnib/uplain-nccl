@@ -4,11 +4,12 @@ ARG FROM_IMG_NAME="uplain-cudnn-dev"
 ARG FROM_IMG_TAG="9.0"
 ARG FROM_IMG_HASH=""
 ARG CUDA_COMPUTE_CAPABILITIES=""
-
+ARG CFLAG_MARCH=x86-64
 
 ### Create nccl deb
 FROM ${DOCKER_REGISTRY}/${FROM_IMG_REPO}/${FROM_IMG_NAME}:${FROM_IMG_TAG}${DOCKER_IMG_HASH} AS nccl
 ARG CUDA_COMPUTE_CAPABILITIES
+ARG CFLAG_MARCH
 
 RUN apt update \
  && apt install -y devscripts debhelper cmake g++-6 gcc-6 cpp-6

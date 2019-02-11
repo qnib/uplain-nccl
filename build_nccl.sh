@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 : ${CFLAG_MARCH=x86-64}
+: ${BUILD_THREADS=8}
 
 CFLAGS="${CFLAGS} -march=${CFLAG_MARCH}"
 echo ">> Use CFLAGS: ${CFLAGS}"
@@ -14,10 +15,10 @@ case ${CUDA_COMPUTE_CAPABILITIES} in
     GENCODE="compute_${SHORT},code=sm_${SHORT}"
   fi
   echo ">> make pkg.debian.build NVCC_GENCODE='-gencode=arch=${GENCODE}'"
-  make pkg.debian.build NVCC_GENCODE="-gencode=arch=${GENCODE}" CFLAGS="${CFLAGS}"
+  make -j${BUILD_THREADS} pkg.debian.build NVCC_GENCODE="-gencode=arch=${GENCODE}" CFLAGS="${CFLAGS}"
   ;;
 *)
   echo ">> make pkg.debian.build"
-  make pkg.debian.build CFLAGS="${CFLAGS}"
+  make -j${BUILD_THREADS} pkg.debian.build CFLAGS="${CFLAGS}"
   ;;
 esac

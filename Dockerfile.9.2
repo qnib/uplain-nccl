@@ -4,10 +4,13 @@ ARG FROM_IMG_NAME="uplain-cudnn-dev"
 ARG FROM_IMG_TAG="9.2"
 ARG FROM_IMG_HASH=""
 ARG CUDA_COMPUTE_CAPABILITIES=""
+ARG CFLAG_MARCH=x86-64
 
 ### Create nccl deb
 FROM ${DOCKER_REGISTRY}/${FROM_IMG_REPO}/${FROM_IMG_NAME}:${FROM_IMG_TAG}${DOCKER_IMG_HASH} AS nccl
 ARG CUDA_COMPUTE_CAPABILITIES
+ARG CFLAG_MARCH
+
 RUN apt update \
  && apt install -y build-essential devscripts debhelper git
 WORKDIR /usr/local/src
@@ -15,7 +18,10 @@ RUN git clone https://github.com/nvidia/nccl
 WORKDIR /usr/local/src/nccl
 COPY build_nccl.sh /usr/local/bin/
 RUN build_nccl.sh
+
 FROM ${DOCKER_REGISTRY}/${FROM_IMG_REPO}/${FROM_IMG_NAME}:${FROM_IMG_TAG}${DOCKER_IMG_HASH}
+ARG CFLAG_MARCH
+LABEL node.march=${CFLAG_MARCH}
 
 COPY --from=nccl /usr/local/src/nccl/build/pkg/deb/ /usr/local/deb/
 RUN dpkg -i /usr/local/deb/* \
