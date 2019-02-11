@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 
 : ${CFLAG_MARCH=x86-64}
-: ${BUILD_THREADS=8}
+
+if [[ "X${BUILD_THREADS}" == "X" ]];then
+  BUILD_THREADS=$(nproc --all)
+fi
 
 CFLAGS="${CFLAGS} -march=${CFLAG_MARCH}"
 echo ">> Use CFLAGS: ${CFLAGS}"
