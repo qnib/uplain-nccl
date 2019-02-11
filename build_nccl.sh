@@ -7,7 +7,7 @@ if [[ "X${BUILD_THREADS}" == "X" ]];then
 fi
 
 CFLAGS="${CFLAGS} -march=${CFLAG_MARCH}"
-echo ">> Use CFLAGS: ${CFLAGS}"
+echo ">> Use CFLAGS: ${CFLAGS} and -j${BUILD_THREADS}"
 echo ">> ${CUDA_COMPUTE_CAPABILITIES}"
 case ${CUDA_COMPUTE_CAPABILITIES} in
  [1-9]*)
